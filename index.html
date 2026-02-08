@@ -276,10 +276,11 @@
                     <div class="card h-100">
                         <div class="card-header" data-lang-key="reflection_input">Your reflection</div>
                         <div class="card-body d-flex flex-column position-relative">
-                            <div class="d-flex justify-content-end text-muted mb-2">
+                            <div class="d-flex justify-content-between align-items-center text-muted mb-2">
+                                <span class="small" data-lang-key="recommended_words">Recommended: 400 words</span>
                                 <span id="task-word-count">0 <span data-lang-key="words">words</span></span>
                             </div>
-                            <textarea id="task-reflection-text" class="form-control flex-grow-1 mb-3" data-lang-key-placeholder="paste_reflection_placeholder" placeholder="Paste or write your reflection here... (at least 400 words)" spellcheck="false" style="min-height: 500px;" minlength="100"></textarea>
+                            <textarea id="task-reflection-text" class="form-control flex-grow-1 mb-3" data-lang-key-placeholder="paste_reflection_placeholder" placeholder="Please write at least 400 words..." spellcheck="false" style="min-height: 500px;"></textarea>
                             <div class="input-actions mt-auto">
                                 <button id="task-generate-btn" class="btn btn-primary btn-lg w-100 mb-2" disabled>
                                     <i class="bi bi-chat-dots me-1"></i><span data-lang-key="generate_feedback">Generate Feedback</span>

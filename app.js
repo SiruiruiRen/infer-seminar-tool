@@ -71,7 +71,7 @@ const translations = {
         video_label: 'Video',
         reflection_for: 'Reflection for:',
         reflection_input: 'Your reflection',
-        paste_reflection_placeholder: 'Paste or write your reflection here... (at least 400 words)',
+        paste_reflection_placeholder: 'Please write at least 400 words...',
         generate_feedback: 'Generate Feedback',
         generated_feedback: 'Generated Feedback',
         extended: 'Extended',
@@ -107,7 +107,10 @@ const translations = {
         short_description: 'Concise, easy-to-read feedback with key points and practical tips',
         can_switch_later: 'You can switch between both styles anytime using the tabs after feedback is generated.',
         select_extended: 'Start with Extended',
-        select_short: 'Start with Short'
+        select_short: 'Start with Short',
+        recommended_words: 'Recommended: 400 words',
+        reflection_too_short: 'Your text is too short. Please write at least 400 words.',
+        duplicate_reflection_message: 'You submitted the same reflection as before. Please revise your reflection to improve it based on the previous feedback, then generate new feedback.'
     },
     de: {
         title: 'INFER',
@@ -141,7 +144,7 @@ const translations = {
         video_label: 'Video',
         reflection_for: 'Reflexion zu:',
         reflection_input: 'Ihre Reflexion',
-        paste_reflection_placeholder: 'Fügen Sie hier Ihre Reflexion ein oder schreiben Sie sie... (mindestens 400 Wörter)',
+        paste_reflection_placeholder: 'Bitte schreiben Sie mindestens 400 Wörter...',
         generate_feedback: 'Feedback generieren',
         generated_feedback: 'Generiertes Feedback',
         extended: 'Erweitert',
@@ -177,7 +180,10 @@ const translations = {
         short_description: 'Prägnantes, leicht lesbares Feedback mit Kernpunkten und praktischen Tipps',
         can_switch_later: 'Sie können nach der Generierung jederzeit über die Tabs zwischen beiden Stilen wechseln.',
         select_extended: 'Mit Erweitert beginnen',
-        select_short: 'Mit Kurz beginnen'
+        select_short: 'Mit Kurz beginnen',
+        recommended_words: 'Empfohlen: 400 Wörter',
+        reflection_too_short: 'Ihr Text ist zu kurz. Bitte schreiben Sie mindestens 400 Wörter.',
+        duplicate_reflection_message: 'Sie haben dieselbe Reflexion wie zuvor eingereicht. Bitte überarbeiten Sie Ihre Reflexion anhand des bisherigen Feedbacks und generieren Sie anschließend neues Feedback.'
     }
 };
 
@@ -495,7 +501,7 @@ function setupTaskPage() {
     function updateWordCount() {
         const n = (textarea.value.trim().split(/\s+/).filter(w => w.length).length);
         if (wordCountEl && wordCountEl.firstChild) wordCountEl.firstChild.textContent = n + ' ';
-        if (generateBtn) generateBtn.disabled = n < 50;
+        if (generateBtn) generateBtn.disabled = n < 200;
     }
     if (textarea) textarea.addEventListener('input', updateWordCount);
     updateWordCount();
@@ -521,8 +527,16 @@ function setupTaskPage() {
         if (!videoId || !reflection) return;
 
         const wordCount = reflection.split(/\s+/).filter(w => w.length).length;
+        const t = translations[currentLanguage] || translations.en;
         if (wordCount < 200) {
-            showAlert(currentLanguage === 'de' ? 'Bitte mindestens 400 Wörter schreiben.' : 'Please write at least 400 words.', 'warning');
+            showAlert(t.reflection_too_short || (currentLanguage === 'de' ? 'Bitte mindestens 400 Wörter schreiben.' : 'Please write at least 400 words.'), 'warning');
+            return;
+        }
+
+        const previousReflection = sessionStorage.getItem('reflection-' + videoId);
+        if (previousReflection && previousReflection.trim() === reflection) {
+            logEvent('duplicate_reflection_detected', { video_id: videoId });
+            showAlert(t.duplicate_reflection_message || 'You submitted the same reflection as before. Please revise and generate new feedback.', 'warning');
             return;
         }
 
@@ -534,7 +548,6 @@ function setupTaskPage() {
             loadingInFeedback.classList.remove('d-none');
             loadingInFeedback.classList.add('d-flex');
         }
-        const t = translations[currentLanguage] || translations.en;
         let msgIndex = 0;
         const loadingInterval = setInterval(() => {
             msgIndex = (msgIndex + 1) % (t.loading_messages?.length || 1);
@@ -579,6 +592,7 @@ function setupTaskPage() {
                     word_count: wordCount,
                     language: currentLanguage
                 });
+                sessionStorage.setItem('reflection-' + videoId, reflection);
                 showFeedbackPreferenceModalAndThen(feedbackSection, goToSurveyBtn);
             }
         } catch (err) {
