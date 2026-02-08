@@ -276,11 +276,11 @@
                     <div class="card h-100">
                         <div class="card-header" data-lang-key="reflection_input">Your reflection</div>
                         <div class="card-body d-flex flex-column position-relative">
-                            <div class="d-flex justify-content-between align-items-center text-muted mb-2">
-                                <span class="small" data-lang-key="recommended_words">Recommended: 400 words</span>
+                            <p class="small text-muted mb-2" data-lang-key="recommended_words">Recommended: 400 words</p>
+                            <textarea id="task-reflection-text" class="form-control flex-grow-1 mb-2" data-lang-key-placeholder="paste_reflection_placeholder" placeholder="Please write at least 400 words..." spellcheck="false" style="min-height: 500px;"></textarea>
+                            <div class="d-flex justify-content-end text-muted mb-2">
                                 <span id="task-word-count">0 <span data-lang-key="words">words</span></span>
                             </div>
-                            <textarea id="task-reflection-text" class="form-control flex-grow-1 mb-3" data-lang-key-placeholder="paste_reflection_placeholder" placeholder="Please write at least 400 words..." spellcheck="false" style="min-height: 500px;"></textarea>
                             <div class="input-actions mt-auto">
                                 <button type="button" id="task-generate-btn" class="btn btn-primary btn-lg w-100 mb-2" disabled>
                                     <i class="bi bi-chat-dots me-1"></i><span data-lang-key="generate_feedback">Generate Feedback</span>
@@ -423,6 +423,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" id="select-extended-first" data-lang-key="select_extended">Start with Extended</button>
                     <button type="button" class="btn btn-outline-success" id="select-short-first" data-lang-key="select_short">Start with Short</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final submission confirmation modal: continue editing or confirm submit -->
+    <div class="modal fade" id="final-submission-modal" tabindex="-1" aria-labelledby="final-submission-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="final-submission-modal-label" data-lang-key="confirm_final_submission">Confirm Final Submission</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <p data-lang-key="final_submission_warning">Are you sure you want to submit and go to the post-survey? You won't be able to make more changes to this task.</p>
+                    <p class="text-muted" data-lang-key="final_submission_note">You can continue revising your reflection until you're satisfied, then click "Continue to Post-Survey" again when you're ready.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key="continue_editing">Continue Editing</button>
+                    <button type="button" class="btn btn-success" id="confirm-final-submission" data-lang-key="confirm_submit">Yes, Submit Final</button>
                 </div>
             </div>
         </div>

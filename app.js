@@ -109,6 +109,11 @@ const translations = {
         select_extended: 'Start with Extended',
         select_short: 'Start with Short',
         recommended_words: 'Recommended: 400 words',
+        confirm_final_submission: 'Confirm Final Submission',
+        final_submission_warning: 'Are you sure you want to submit and go to the post-survey? You won\'t be able to make more changes to this task.',
+        final_submission_note: 'You can continue revising your reflection until you\'re satisfied, then click "Continue to Post-Survey" again when you\'re ready.',
+        continue_editing: 'Continue Editing',
+        confirm_submit: 'Yes, Submit Final',
         reflection_too_short: 'Your text is too short. Please write at least 400 words.',
         duplicate_reflection_message: 'You submitted the same reflection as before. Please revise your reflection to improve it based on the previous feedback, then generate new feedback.'
     },
@@ -182,6 +187,11 @@ const translations = {
         select_extended: 'Mit Erweitert beginnen',
         select_short: 'Mit Kurz beginnen',
         recommended_words: 'Empfohlen: 400 Wörter',
+        confirm_final_submission: 'Endgültige Einreichung bestätigen',
+        final_submission_warning: 'Möchten Sie wirklich einreichen und zur Nachbefragung gehen? Sie können diese Aufgabe danach nicht mehr ändern.',
+        final_submission_note: 'Sie können Ihre Reflexion weiter überarbeiten. Klicken Sie erneut auf „Weiter zur Nachbefragung“, wenn Sie bereit sind.',
+        continue_editing: 'Weiter bearbeiten',
+        confirm_submit: 'Ja, endgültig einreichen',
         reflection_too_short: 'Ihr Text ist zu kurz. Bitte schreiben Sie mindestens 400 Wörter.',
         duplicate_reflection_message: 'Sie haben dieselbe Reflexion wie zuvor eingereicht. Bitte überarbeiten Sie Ihre Reflexion anhand des bisherigen Feedbacks und generieren Sie anschließend neues Feedback.'
     }
@@ -605,7 +615,21 @@ function setupTaskPage() {
         }
     });
 
-    goToSurveyBtn.addEventListener('click', async () => {
+    goToSurveyBtn.addEventListener('click', () => {
+        const modalEl = document.getElementById('final-submission-modal');
+        if (!modalEl || typeof bootstrap === 'undefined') {
+            doFinalSubmit();
+            return;
+        }
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        document.getElementById('confirm-final-submission').onclick = () => {
+            modal.hide();
+            doFinalSubmit();
+        };
+        modal.show();
+    });
+
+    async function doFinalSubmit() {
         endFeedbackViewing(taskState.currentFeedbackType);
         const finalText = document.getElementById('task-reflection-text')?.value?.trim() || null;
         logEvent('final_submission', { video_id: selectedVideoId, reflection_length: finalText ? finalText.length : 0 });
@@ -615,7 +639,7 @@ function setupTaskPage() {
         showPage('page-postsurvey');
         const iframe = document.getElementById('post-survey-iframe');
         if (iframe) iframe.src = POST_SURVEY_URL;
-    });
+    }
 
     setupDefinitionCardTracking();
 }
