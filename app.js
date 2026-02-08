@@ -398,7 +398,6 @@ function setupIdPage() {
         btn.disabled = !input.value.trim();
     }
     input.addEventListener('input', updateBtn);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 
     btn.addEventListener('click', () => {
         const id = input.value.trim().toUpperCase();

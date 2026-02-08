@@ -87,7 +87,7 @@
                                 <span data-lang-key="consent_disagreement_message">You still need to complete this task and fill out all surveys to fulfill the course requirement. However, we will not store or share your data for scientific purposes.</span>
                             </div>
                             <div class="text-center mt-4">
-                                <button id="continue-to-id" class="btn btn-primary btn-lg" disabled>
+                                <button type="button" id="continue-to-id" class="btn btn-primary btn-lg" disabled>
                                     <i class="bi bi-arrow-right me-2"></i>
                                     <span data-lang-key="continue_to_id">Continue</span>
                                 </button>
@@ -133,7 +133,7 @@
                                 <input type="text" class="form-control" id="anonymous-id-input" data-lang-key-placeholder="code_placeholder" placeholder="e.g., ER04LF09" maxlength="20" required>
                                 <small class="form-text text-muted" data-lang-key="anonymous_id_help"></small>
                             </div>
-                            <button id="submit-id" class="btn btn-primary btn-lg w-100">
+                            <button type="button" id="submit-id" class="btn btn-primary btn-lg w-100">
                                 <i class="bi bi-arrow-right me-2"></i>
                                 <span data-lang-key="continue_button">Continue</span>
                             </button>
@@ -176,7 +176,7 @@
                                 <option value="video3">Video 3: 03 Höhendifferenz</option>
                                 <option value="video4">Video 4: 04 Binomische Formeln</option>
                             </select>
-                            <button id="submit-video-select" class="btn btn-primary btn-lg w-100" disabled>
+                            <button type="button" id="submit-video-select" class="btn btn-primary btn-lg w-100" disabled>
                                 <i class="bi bi-arrow-right me-2"></i>
                                 <span data-lang-key="continue_button">Continue</span>
                             </button>
@@ -220,7 +220,7 @@
                                 <input class="form-check-input" type="checkbox" id="tutorial-watched-check" disabled>
                                 <label class="form-check-label" for="tutorial-watched-check" data-lang-key="tutorial_watched_checkbox">I have watched the tutorial</label>
                             </div>
-                            <button id="continue-after-tutorial" class="btn btn-primary" disabled>
+                            <button type="button" id="continue-after-tutorial" class="btn btn-primary" disabled>
                                 <span data-lang-key="continue_button">Continue</span>
                             </button>
                         </div>
@@ -282,10 +282,10 @@
                             </div>
                             <textarea id="task-reflection-text" class="form-control flex-grow-1 mb-3" data-lang-key-placeholder="paste_reflection_placeholder" placeholder="Please write at least 400 words..." spellcheck="false" style="min-height: 500px;"></textarea>
                             <div class="input-actions mt-auto">
-                                <button id="task-generate-btn" class="btn btn-primary btn-lg w-100 mb-2" disabled>
+                                <button type="button" id="task-generate-btn" class="btn btn-primary btn-lg w-100 mb-2" disabled>
                                     <i class="bi bi-chat-dots me-1"></i><span data-lang-key="generate_feedback">Generate Feedback</span>
                                 </button>
-                                <button id="task-go-to-survey" class="btn btn-success btn-lg w-100 d-none">
+                                <button type="button" id="task-go-to-survey" class="btn btn-success btn-lg w-100 d-none">
                                     <i class="bi bi-link-45deg me-1"></i><span data-lang-key="go_to_post_survey">Continue to Post-Survey</span>
                                 </button>
                             </div>
@@ -468,7 +468,7 @@
                                     <div id="post-survey-code-error" class="text-danger mt-2 d-none"></div>
                                 </div>
                                 <div class="text-center">
-                                    <button id="post-survey-complete-btn" class="btn btn-success btn-lg" data-lang-key="complete_study">Complete Study</button>
+                                    <button type="button" id="post-survey-complete-btn" class="btn btn-success btn-lg" data-lang-key="complete_study">Complete Study</button>
                                 </div>
                             </div>
                             <div id="post-survey-thankyou" class="text-center py-5 d-none">
