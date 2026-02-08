@@ -183,11 +183,11 @@ function applyTranslations() {
 }
 
 function renderLanguageSwitcher() {
-    const container = document.querySelector('.language-switcher-container');
-    if (!container) return;
-    container.innerHTML = '<div class="btn-group"><button type="button" class="btn ' + (currentLanguage === 'en' ? 'btn-primary' : 'btn-outline-primary') + '" id="lang-en">English</button><button type="button" class="btn ' + (currentLanguage === 'de' ? 'btn-primary' : 'btn-outline-primary') + '" id="lang-de">Deutsch</button></div>';
-    document.getElementById('lang-en').addEventListener('click', () => { currentLanguage = 'en'; renderLanguageSwitcher(); applyTranslations(); });
-    document.getElementById('lang-de').addEventListener('click', () => { currentLanguage = 'de'; renderLanguageSwitcher(); applyTranslations(); });
+    const containers = document.querySelectorAll('.language-switcher-container');
+    const btnEn = (currentLanguage === 'en' ? 'btn-primary' : 'btn-outline-primary');
+    const btnDe = (currentLanguage === 'de' ? 'btn-primary' : 'btn-outline-primary');
+    const html = '<div class="btn-group"><button type="button" class="btn ' + btnEn + '" data-lang="en">English</button><button type="button" class="btn ' + btnDe + '" data-lang="de">Deutsch</button></div>';
+    containers.forEach(c => { c.innerHTML = html; });
 }
 
 function initSupabase() {
@@ -926,6 +926,15 @@ function displayAnalysisDistribution(analysisResult) {
 // ----- Init -----
 document.addEventListener('DOMContentLoaded', () => {
     initSupabase();
+    // Single delegated listener for language buttons (each page has its own switcher)
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest && e.target.closest('[data-lang]');
+        if (btn && (btn.getAttribute('data-lang') === 'en' || btn.getAttribute('data-lang') === 'de')) {
+            currentLanguage = btn.getAttribute('data-lang');
+            renderLanguageSwitcher();
+            applyTranslations();
+        }
+    });
     renderLanguageSwitcher();
     applyTranslations();
     setupDataCollectionPage();
