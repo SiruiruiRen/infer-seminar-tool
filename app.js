@@ -24,7 +24,7 @@ const POST_SURVEY_URL = 'https://unc.az1.qualtrics.com/jfe/form/SV_9ZiPKf0uGc7ZK
 const COMPLETION_CODE = '628034';
 
 let currentLanguage = 'de';
-let supabase = null;
+let supabaseClient = null;
 let sessionId = null;
 let participantId = null;
 let selectedVideoId = null;
@@ -194,8 +194,8 @@ function initSupabase() {
     if (!SUPABASE_URL || !SUPABASE_KEY) return null;
     try {
         if (typeof window.supabase === 'undefined') return null;
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        return supabase;
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        return supabaseClient;
     } catch (e) {
         console.warn('Supabase init failed', e);
         return null;
@@ -203,7 +203,7 @@ function initSupabase() {
 }
 
 async function logSeminarSession(participant_name, saw_tutorial, video_id, survey_verification_code) {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
         const row = {
             participant_name: participant_name.trim().toUpperCase(),
@@ -212,7 +212,7 @@ async function logSeminarSession(participant_name, saw_tutorial, video_id, surve
             updated_at: new Date().toISOString()
         };
         if (survey_verification_code != null) row.survey_verification_code = survey_verification_code;
-        const { error } = await supabase.from('seminar_sessions').upsert(row, { onConflict: 'participant_name' });
+        const { error } = await supabaseClient.from('seminar_sessions').upsert(row, { onConflict: 'participant_name' });
         if (error) console.warn('seminar_sessions upsert error', error);
     } catch (e) {
         console.warn('logSeminarSession', e);
@@ -225,7 +225,7 @@ function getSessionId() {
 }
 
 async function logEvent(eventType, eventData) {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
         const payload = {
             session_id: getSessionId(),
@@ -235,7 +235,7 @@ async function logEvent(eventType, eventData) {
             event_data: eventData || {},
             timestamp_utc: new Date().toISOString()
         };
-        const { error } = await supabase.from('seminar_user_events').insert([payload]);
+        const { error } = await supabaseClient.from('seminar_user_events').insert([payload]);
         if (error) console.warn('logEvent error', eventType, error);
     } catch (e) {
         console.warn('logEvent', e);
@@ -266,7 +266,7 @@ function endFeedbackViewing(style) {
 }
 
 async function saveReflectionToDatabase(data) {
-    if (!supabase) return null;
+    if (!supabaseClient) return null;
     try {
         const row = {
             session_id: getSessionId(),
@@ -280,7 +280,7 @@ async function saveReflectionToDatabase(data) {
             feedback_short: data.shortFeedback || null,
             revision_number: 1
         };
-        const { data: result, error } = await supabase.from('seminar_reflections').insert([row]).select().single();
+        const { data: result, error } = await supabaseClient.from('seminar_reflections').insert([row]).select().single();
         if (error) { console.warn('saveReflectionToDatabase error', error); return null; }
         taskState.currentReflectionId = result.id;
         return result.id;
@@ -291,11 +291,11 @@ async function saveReflectionToDatabase(data) {
 }
 
 async function markReflectionSubmitted(reflectionId, finalReflectionText) {
-    if (!supabase || !reflectionId) return;
+    if (!supabaseClient || !reflectionId) return;
     try {
         const update = { submitted_at: new Date().toISOString() };
         if (finalReflectionText != null) update.reflection_text = finalReflectionText;
-        await supabase.from('seminar_reflections').update(update).eq('id', reflectionId);
+        await supabaseClient.from('seminar_reflections').update(update).eq('id', reflectionId);
     } catch (e) {
         console.warn('markReflectionSubmitted', e);
     }
