@@ -308,20 +308,22 @@
                             </div>
                             <div id="task-feedback-section" class="d-none flex-grow-1 d-flex flex-column">
                                 <div id="analysis-distribution-task" class="analysis-distribution-professional mb-3"></div>
-                                <ul class="nav nav-tabs mb-2" id="task-feedback-tabs">
-                                    <li class="nav-item">
-                                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#task-feedback-extended" data-lang-key="extended">Extended</button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#task-feedback-short" data-lang-key="short">Short</button>
-                                    </li>
-                                </ul>
-                                <div class="tab-content flex-grow-1">
-                                    <div class="tab-pane fade show active" id="task-feedback-extended">
-                                        <div id="task-feedback-extended-content" class="feedback-content"></div>
-                                    </div>
-                                    <div class="tab-pane fade" id="task-feedback-short">
-                                        <div id="task-feedback-short-content" class="feedback-content"></div>
+                                <div id="task-feedback-display" class="form-control h-100 flex-grow-1 mb-3">
+                                    <ul class="nav nav-tabs feedback-tabs mb-2" id="task-feedback-tabs" role="tablist">
+                                        <li class="nav-item">
+                                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#task-feedback-extended" data-lang-key="extended">Extended</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#task-feedback-short" data-lang-key="short">Short</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content flex-grow-1">
+                                        <div class="tab-pane fade show active" id="task-feedback-extended">
+                                            <div id="task-feedback-extended-content" class="feedback-content"></div>
+                                        </div>
+                                        <div class="tab-pane fade" id="task-feedback-short">
+                                            <div id="task-feedback-short-content" class="feedback-content"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -381,6 +383,45 @@
                             Your browser does not support the video tag.
                         </video>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback style preference modal (like alpha: choose extended or short first) -->
+    <div class="modal fade" id="feedback-preference-modal" tabindex="-1" aria-labelledby="feedback-preference-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feedback-preference-modal-label" data-lang-key="choose_feedback_style">Choose Your Preferred Feedback Style</h5>
+                </div>
+                <div class="modal-body">
+                    <p data-lang-key="feedback_style_intro">We generate two types of feedback. Which would you like to see first?</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 feedback-option-card" data-style="extended">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-journal-text text-primary mb-3" style="font-size: 2.5rem;"></i>
+                                    <h6 data-lang-key="extended">Extended</h6>
+                                    <p class="small text-muted" data-lang-key="extended_description">Detailed academic feedback with comprehensive analysis and educational theory references</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 feedback-option-card" data-style="short">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-card-text text-success mb-3" style="font-size: 2.5rem;"></i>
+                                    <h6 data-lang-key="short">Short</h6>
+                                    <p class="small text-muted" data-lang-key="short_description">Concise, easy-to-read feedback with key points and practical tips</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-3" data-lang-key="can_switch_later">You can switch between both styles anytime using the tabs after feedback is generated.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" id="select-extended-first" data-lang-key="select_extended">Start with Extended</button>
+                    <button type="button" class="btn btn-outline-success" id="select-short-first" data-lang-key="select_short">Start with Short</button>
                 </div>
             </div>
         </div>

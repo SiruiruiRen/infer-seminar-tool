@@ -100,7 +100,14 @@ const translations = {
         description_def: 'Accurately observing and reporting what happened in the classroom - specific behaviors, interactions, and events without interpretation.',
         explanation_def: 'Interpreting observed events using educational theory, research, and pedagogical knowledge - understanding why things happened.',
         prediction_def: 'Anticipating future outcomes and effects on student learning based on observed teaching practices and their interpretations.',
-        percentage_explanation_simple: 'Note: Percentages may exceed 100% as text can have multiple codes.'
+        percentage_explanation_simple: 'Note: Percentages may exceed 100% as text can have multiple codes.',
+        choose_feedback_style: 'Choose Your Preferred Feedback Style',
+        feedback_style_intro: 'We generate two types of feedback. Which would you like to see first?',
+        extended_description: 'Detailed academic feedback with comprehensive analysis and educational theory references',
+        short_description: 'Concise, easy-to-read feedback with key points and practical tips',
+        can_switch_later: 'You can switch between both styles anytime using the tabs after feedback is generated.',
+        select_extended: 'Start with Extended',
+        select_short: 'Start with Short'
     },
     de: {
         title: 'INFER',
@@ -163,7 +170,14 @@ const translations = {
         description_def: 'Sachliches Beobachten und Berichten des Geschehenen im Unterricht – konkrete Verhaltensweisen, Interaktionen und Ereignisse ohne Bewertung.',
         explanation_def: 'Beobachtetes mit Bildungstheorie, Forschung und pädagogischem Wissen deuten – verstehen, warum etwas passiert ist.',
         prediction_def: 'Zukünftige Wirkungen auf das Lernen der Schüler:innen auf Basis der beobachteten Lehrpraxis und ihrer Deutung antizipieren.',
-        percentage_explanation_simple: 'Die Prozentsätze der professionellen Wahrnehmung können 100% überschreiten, da jedes Textsegment für mehrere Komponenten kodiert werden kann: Beschreibung, Erklärung und Vorhersage.'
+        percentage_explanation_simple: 'Die Prozentsätze der professionellen Wahrnehmung können 100% überschreiten, da jedes Textsegment für mehrere Komponenten kodiert werden kann: Beschreibung, Erklärung und Vorhersage.',
+        choose_feedback_style: 'Wählen Sie Ihren bevorzugten Feedback-Stil',
+        feedback_style_intro: 'Wir generieren zwei Arten von Feedback. Welches möchten Sie zuerst sehen?',
+        extended_description: 'Detailliertes akademisches Feedback mit umfassender Analyse und pädagogischen Theoriereferenzen',
+        short_description: 'Prägnantes, leicht lesbares Feedback mit Kernpunkten und praktischen Tipps',
+        can_switch_later: 'Sie können nach der Generierung jederzeit über die Tabs zwischen beiden Stilen wechseln.',
+        select_extended: 'Mit Erweitert beginnen',
+        select_short: 'Mit Kurz beginnen'
     }
 };
 
@@ -514,6 +528,8 @@ function setupTaskPage() {
 
         generateBtn.disabled = true;
         if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
+        if (feedbackSection) feedbackSection.classList.add('d-none');
+        if (goToSurveyBtn) goToSurveyBtn.classList.add('d-none');
         if (loadingInFeedback) {
             loadingInFeedback.classList.remove('d-none');
             loadingInFeedback.classList.add('d-flex');
@@ -555,8 +571,6 @@ function setupTaskPage() {
                 document.getElementById('task-feedback-extended-content').innerHTML = formatStructuredFeedback(extendedFeedback, analysisResult);
                 document.getElementById('task-feedback-short-content').innerHTML = formatStructuredFeedback(shortFeedback, analysisResult);
                 if (loadingInFeedback) loadingInFeedback.classList.add('d-none');
-                feedbackSection.classList.remove('d-none');
-                if (goToSurveyBtn) goToSurveyBtn.classList.remove('d-none');
                 taskState.feedbackGenerated = true;
                 await logSeminarSession(participantId, sawTutorial, videoId);
                 logEvent('feedback_generated_successfully', {
@@ -565,9 +579,7 @@ function setupTaskPage() {
                     word_count: wordCount,
                     language: currentLanguage
                 });
-                startFeedbackViewing('extended');
-                setupFeedbackTabTracking();
-                setupConceptClickTracking();
+                showFeedbackPreferenceModalAndThen(feedbackSection, goToSurveyBtn);
             }
         } catch (err) {
             console.error(err);
@@ -595,18 +607,49 @@ function setupTaskPage() {
     setupDefinitionCardTracking();
 }
 
+function showFeedbackPreferenceModalAndThen(feedbackSectionEl, goToSurveyBtnEl) {
+    const modalEl = document.getElementById('feedback-preference-modal');
+    if (!modalEl || typeof bootstrap === 'undefined') {
+        feedbackSectionEl.classList.remove('d-none');
+        if (goToSurveyBtnEl) goToSurveyBtnEl.classList.remove('d-none');
+        startFeedbackViewing('extended');
+        setupFeedbackTabTracking();
+        setupConceptClickTracking();
+        return;
+    }
+    const modal = new bootstrap.Modal(modalEl);
+    function applyChoice(style) {
+        logEvent('feedback_style_chosen', { style, video_id: selectedVideoId });
+        modal.hide();
+        feedbackSectionEl.classList.remove('d-none');
+        if (goToSurveyBtnEl) goToSurveyBtnEl.classList.remove('d-none');
+        if (style === 'short') {
+            const shortTab = document.querySelector('#task-feedback-tabs [data-bs-target="#task-feedback-short"]');
+            if (shortTab) shortTab.click();
+        }
+        startFeedbackViewing(style);
+        setupFeedbackTabTracking();
+        setupConceptClickTracking();
+    }
+    document.getElementById('select-extended-first').onclick = () => applyChoice('extended');
+    document.getElementById('select-short-first').onclick = () => applyChoice('short');
+    modal.show();
+}
+
 function setupFeedbackTabTracking() {
     const extendedTab = document.querySelector('#task-feedback-tabs [data-bs-target="#task-feedback-extended"]');
     const shortTab = document.querySelector('#task-feedback-tabs [data-bs-target="#task-feedback-short"]');
     if (extendedTab) {
         extendedTab.addEventListener('click', () => {
             endFeedbackViewing(taskState.currentFeedbackType);
+            logEvent('feedback_tab_switched', { to: 'extended', video_id: selectedVideoId });
             startFeedbackViewing('extended');
         });
     }
     if (shortTab) {
         shortTab.addEventListener('click', () => {
             endFeedbackViewing(taskState.currentFeedbackType);
+            logEvent('feedback_tab_switched', { to: 'short', video_id: selectedVideoId });
             startFeedbackViewing('short');
         });
     }
