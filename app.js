@@ -78,11 +78,15 @@ const translations = {
         short: 'Short',
         go_to_post_survey: 'Continue to Post-Survey',
         post_survey_title: 'Post-Survey',
-        post_survey_intro: 'Please complete the following survey. At the end, enter the confirmation code below to finish.',
-        open_post_survey: 'Open Post-Survey',
-        completion_code_title: 'Confirmation code',
-        completion_code_instruction: 'After completing the survey, enter this code:',
-        completion_code_note: 'Thank you for completing this video task! Please enter the following code to continue. The code is: 628034',
+        post_survey_intro: 'Please complete the survey below. At the end of the survey you will receive a confirmation code. Enter that code below to finish.',
+        post_survey_code_instruction: 'Complete the survey above, then enter the confirmation code you received below.',
+        verification_code_label: 'Enter Confirmation Code:',
+        verification_code_placeholder: 'Enter the code from the survey',
+        verification_code_invalid: 'Invalid code. Please check the code from the survey and try again.',
+        verification_code_required: 'Please enter the confirmation code to continue.',
+        complete_study: 'Complete Study',
+        thank_you_title: 'Thank You!',
+        participation_complete: 'Your participation is complete.',
         loading_messages: ['Analyzing your reflection...', 'Generating feedback...', 'Almost there...'],
         settings: 'Settings',
         words: 'words',
@@ -137,11 +141,15 @@ const translations = {
         short: 'Kurz',
         go_to_post_survey: 'Weiter zur Nachbefragung',
         post_survey_title: 'Nachbefragung',
-        post_survey_intro: 'Bitte füllen Sie die folgende Umfrage aus. Am Ende geben Sie den Bestätigungscode ein.',
-        open_post_survey: 'Nachbefragung öffnen',
-        completion_code_title: 'Bestätigungscode',
-        completion_code_instruction: 'Nach Abschluss der Umfrage geben Sie diesen Code ein:',
-        completion_code_note: 'Vielen Dank für die Bearbeitung dieser Videoaufgabe! Bitte geben Sie den folgenden Code ein, um fortzufahren. Der Code lautet: 628034',
+        post_survey_intro: 'Bitte füllen Sie die Umfrage unten aus. Am Ende der Umfrage erhalten Sie einen Bestätigungscode. Geben Sie diesen Code unten ein, um abzuschließen.',
+        post_survey_code_instruction: 'Vervollständigen Sie die Umfrage oben und geben Sie dann den erhaltenen Bestätigungscode unten ein.',
+        verification_code_label: 'Bestätigungscode eingeben:',
+        verification_code_placeholder: 'Code aus der Umfrage eingeben',
+        verification_code_invalid: 'Ungültiger Code. Bitte überprüfen Sie den Code aus der Umfrage.',
+        verification_code_required: 'Bitte geben Sie den Bestätigungscode ein, um fortzufahren.',
+        complete_study: 'Studie abschließen',
+        thank_you_title: 'Vielen Dank!',
+        participation_complete: 'Ihre Teilnahme ist abgeschlossen.',
         loading_messages: ['Reflexion wird analysiert...', 'Feedback wird erstellt...', 'Fast fertig...'],
         settings: 'Einstellungen',
         words: 'Wörter',
@@ -464,7 +472,7 @@ function setupTaskPage() {
     const textarea = document.getElementById('task-reflection-text');
     const wordCountEl = document.getElementById('task-word-count');
     const generateBtn = document.getElementById('task-generate-btn');
-    const loadingSpinner = document.getElementById('task-loading-spinner');
+    const loadingInFeedback = document.getElementById('task-loading-in-feedback');
     const loadingText = document.getElementById('task-loading-text');
     const feedbackSection = document.getElementById('task-feedback-section');
     const feedbackPlaceholder = document.getElementById('task-feedback-placeholder');
@@ -505,8 +513,11 @@ function setupTaskPage() {
         }
 
         generateBtn.disabled = true;
-        loadingSpinner.classList.remove('d-none');
-        loadingSpinner.classList.add('d-flex');
+        if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
+        if (loadingInFeedback) {
+            loadingInFeedback.classList.remove('d-none');
+            loadingInFeedback.classList.add('d-flex');
+        }
         const t = translations[currentLanguage] || translations.en;
         let msgIndex = 0;
         const loadingInterval = setInterval(() => {
@@ -525,9 +536,9 @@ function setupTaskPage() {
                     : 'Your text is too short or does not relate to the teaching video. Please write at least 400 words about the video.';
                 document.getElementById('task-feedback-extended-content').innerHTML = '<div class="alert alert-warning">' + msg + '</div>';
                 document.getElementById('task-feedback-short-content').innerHTML = '<div class="alert alert-warning">' + msg + '</div>';
+                if (loadingInFeedback) loadingInFeedback.classList.add('d-none');
                 feedbackSection.classList.remove('d-none');
-                if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
-                document.getElementById('task-percentage-explanation')?.classList.remove('d-none');
+                if (goToSurveyBtn) goToSurveyBtn.classList.remove('d-none');
             } else {
                 displayAnalysisDistribution(analysisResult);
                 const [extendedFeedback, shortFeedback] = await Promise.all([
@@ -543,9 +554,9 @@ function setupTaskPage() {
                 });
                 document.getElementById('task-feedback-extended-content').innerHTML = formatStructuredFeedback(extendedFeedback, analysisResult);
                 document.getElementById('task-feedback-short-content').innerHTML = formatStructuredFeedback(shortFeedback, analysisResult);
+                if (loadingInFeedback) loadingInFeedback.classList.add('d-none');
                 feedbackSection.classList.remove('d-none');
-                if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
-                document.getElementById('task-percentage-explanation')?.classList.remove('d-none');
+                if (goToSurveyBtn) goToSurveyBtn.classList.remove('d-none');
                 taskState.feedbackGenerated = true;
                 await logSeminarSession(participantId, sawTutorial, videoId);
                 logEvent('feedback_generated_successfully', {
@@ -561,10 +572,11 @@ function setupTaskPage() {
         } catch (err) {
             console.error(err);
             showAlert(err.message || 'Feedback generation failed.', 'danger');
+            if (feedbackPlaceholder) feedbackPlaceholder.classList.remove('d-none');
         } finally {
             clearInterval(loadingInterval);
             generateBtn.disabled = false;
-            loadingSpinner.classList.add('d-none');
+            if (loadingInFeedback) loadingInFeedback.classList.add('d-none');
         }
     });
 
@@ -574,8 +586,10 @@ function setupTaskPage() {
         logEvent('final_submission', { video_id: selectedVideoId, reflection_length: finalText ? finalText.length : 0 });
         if (taskState.currentReflectionId) await markReflectionSubmitted(taskState.currentReflectionId, finalText);
         await logSeminarSession(participantId, sawTutorial, selectedVideoId, COMPLETION_CODE);
-        logEvent('post_survey_link_clicked', { survey_verification_code: COMPLETION_CODE });
+        logEvent('post_survey_link_clicked', {});
         showPage('page-postsurvey');
+        const iframe = document.getElementById('post-survey-iframe');
+        if (iframe) iframe.src = POST_SURVEY_URL;
     });
 
     setupDefinitionCardTracking();
@@ -1007,6 +1021,38 @@ function displayAnalysisDistribution(analysisResult) {
     container.innerHTML = '<div class="professional-analysis-summary"><h6>' + (isDe ? 'Analyse Ihrer Reflexion' : 'Analysis of Your Reflection') + '</h6><p class="analysis-text">' + (isDe ? 'Ihre Reflexion enthält ' + (raw.description || 0) + '% Beschreibung, ' + (raw.explanation || 0) + '% Erklärung und ' + (raw.prediction || 0) + '% Vorhersage.' : 'Your reflection contains ' + (raw.description || 0) + '% description, ' + (raw.explanation || 0) + '% explanation, and ' + (raw.prediction || 0) + '% prediction.') + '</p></div>';
 }
 
+// ----- Post-survey page: embedded iframe + verification code (no code displayed) -----
+function setupPostSurveyPage() {
+    const completeBtn = document.getElementById('post-survey-complete-btn');
+    const codeInput = document.getElementById('post-survey-verification-code');
+    const errorDiv = document.getElementById('post-survey-code-error');
+    const thankyouDiv = document.getElementById('post-survey-thankyou');
+    const cardBody = codeInput && codeInput.closest('.card-body');
+    if (!completeBtn || !codeInput) return;
+    completeBtn.addEventListener('click', () => {
+        const t = translations[currentLanguage] || translations.en;
+        const entered = (codeInput.value || '').trim();
+        if (!entered) {
+            if (errorDiv) { errorDiv.textContent = t.verification_code_required || ''; errorDiv.classList.remove('d-none'); }
+            return;
+        }
+        if (entered !== COMPLETION_CODE) {
+            if (errorDiv) { errorDiv.textContent = t.verification_code_invalid || ''; errorDiv.classList.remove('d-none'); }
+            return;
+        }
+        logEvent('post_survey_code_verified', {});
+        if (errorDiv) errorDiv.classList.add('d-none');
+        if (cardBody) {
+            const surveySection = cardBody.querySelector('.qualtrics-survey-section');
+            const codeSection = cardBody.querySelector('.mt-4');
+            if (surveySection) surveySection.classList.add('d-none');
+            if (codeSection) codeSection.classList.add('d-none');
+        }
+        if (thankyouDiv) thankyouDiv.classList.remove('d-none');
+    });
+    codeInput.addEventListener('input', () => { if (errorDiv) errorDiv.classList.add('d-none'); });
+}
+
 // ----- Init -----
 document.addEventListener('DOMContentLoaded', () => {
     initSupabase();
@@ -1024,5 +1070,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDataCollectionPage();
     setupIdPage();
     setupVideoSelectPage();
+    setupPostSurveyPage();
     showPage('page-datacollection');
 });
