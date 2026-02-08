@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INFER – Seminar Video Task</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="styles.css">
@@ -240,7 +241,7 @@
                             <img src="University-of-Tubingen-01.png" alt="University of Tübingen" style="height: 50px; margin-right: 15px;">
                             <img src="UNC_logo.avif" alt="UNC Logo" style="height: 30px;">
                         </div>
-                        <div class="col-md-8 text-center">
+                        <div class="col-md-8 text-center d-flex flex-column justify-content-center position-absolute" style="left: 50%; transform: translateX(-50%); width: auto;">
                             <h1 class="mb-0" data-lang-key="title">INFER</h1>
                             <p class="mb-0" data-lang-key="task_subtitle">Video reflection and feedback</p>
                         </div>
@@ -296,6 +297,9 @@
                     <div id="task-feedback-section" class="card h-100 d-none">
                         <div class="card-header"><span data-lang-key="generated_feedback">Generated Feedback</span></div>
                         <div class="card-body d-flex flex-column position-relative">
+                            <div id="task-percentage-explanation" class="alert alert-info mb-3 d-none">
+                                <span data-lang-key="percentage_explanation_simple">Note: Percentages may exceed 100% as text can have multiple codes.</span>
+                            </div>
                             <div id="analysis-distribution-task" class="analysis-distribution-professional mb-3"></div>
                             <ul class="nav nav-tabs mb-2" id="task-feedback-tabs">
                                 <li class="nav-item">

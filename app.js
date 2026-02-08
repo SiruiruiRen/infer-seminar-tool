@@ -95,7 +95,8 @@ const translations = {
         prediction: 'Prediction',
         description_def: 'Accurately observing and reporting what happened in the classroom - specific behaviors, interactions, and events without interpretation.',
         explanation_def: 'Interpreting observed events using educational theory, research, and pedagogical knowledge - understanding why things happened.',
-        prediction_def: 'Anticipating future outcomes and effects on student learning based on observed teaching practices and their interpretations.'
+        prediction_def: 'Anticipating future outcomes and effects on student learning based on observed teaching practices and their interpretations.',
+        percentage_explanation_simple: 'Note: Percentages may exceed 100% as text can have multiple codes.'
     },
     de: {
         title: 'INFER',
@@ -153,7 +154,8 @@ const translations = {
         prediction: 'Vorhersage',
         description_def: 'Sachliches Beobachten und Berichten des Geschehenen im Unterricht – konkrete Verhaltensweisen, Interaktionen und Ereignisse ohne Bewertung.',
         explanation_def: 'Beobachtetes mit Bildungstheorie, Forschung und pädagogischem Wissen deuten – verstehen, warum etwas passiert ist.',
-        prediction_def: 'Zukünftige Wirkungen auf das Lernen der Schüler:innen auf Basis der beobachteten Lehrpraxis und ihrer Deutung antizipieren.'
+        prediction_def: 'Zukünftige Wirkungen auf das Lernen der Schüler:innen auf Basis der beobachteten Lehrpraxis und ihrer Deutung antizipieren.',
+        percentage_explanation_simple: 'Die Prozentsätze der professionellen Wahrnehmung können 100% überschreiten, da jedes Textsegment für mehrere Komponenten kodiert werden kann: Beschreibung, Erklärung und Vorhersage.'
     }
 };
 
@@ -238,6 +240,7 @@ async function logSeminarSession(participant_name, saw_tutorial, video_id, surve
             updated_at: new Date().toISOString()
         };
         if (survey_verification_code != null) row.survey_verification_code = survey_verification_code;
+        console.log('[INFER data] session', row);
         const { error } = await supabaseClient.from('seminar_sessions').upsert(row, { onConflict: 'participant_name' });
         if (error) console.warn('seminar_sessions upsert error', error);
     } catch (e) {
@@ -261,6 +264,7 @@ async function logEvent(eventType, eventData) {
             event_data: eventData || {},
             timestamp_utc: new Date().toISOString()
         };
+        console.log('[INFER data] event', payload);
         const { error } = await supabaseClient.from('seminar_user_events').insert([payload]);
         if (error) console.warn('logEvent error', eventType, error);
     } catch (e) {
@@ -306,6 +310,7 @@ async function saveReflectionToDatabase(data) {
             feedback_short: data.shortFeedback || null,
             revision_number: 1
         };
+        console.log('[INFER data] reflection', row);
         const { data: result, error } = await supabaseClient.from('seminar_reflections').insert([row]).select().single();
         if (error) { console.warn('saveReflectionToDatabase error', error); return null; }
         taskState.currentReflectionId = result.id;
@@ -321,6 +326,7 @@ async function markReflectionSubmitted(reflectionId, finalReflectionText) {
     try {
         const update = { submitted_at: new Date().toISOString() };
         if (finalReflectionText != null) update.reflection_text = finalReflectionText;
+        console.log('[INFER data] reflection_submitted', { reflection_id: reflectionId, ...update });
         await supabaseClient.from('seminar_reflections').update(update).eq('id', reflectionId);
     } catch (e) {
         console.warn('markReflectionSubmitted', e);
@@ -521,6 +527,7 @@ function setupTaskPage() {
                 document.getElementById('task-feedback-short-content').innerHTML = '<div class="alert alert-warning">' + msg + '</div>';
                 feedbackSection.classList.remove('d-none');
                 if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
+                document.getElementById('task-percentage-explanation')?.classList.remove('d-none');
             } else {
                 displayAnalysisDistribution(analysisResult);
                 const [extendedFeedback, shortFeedback] = await Promise.all([
@@ -538,6 +545,7 @@ function setupTaskPage() {
                 document.getElementById('task-feedback-short-content').innerHTML = formatStructuredFeedback(shortFeedback, analysisResult);
                 feedbackSection.classList.remove('d-none');
                 if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
+                document.getElementById('task-percentage-explanation')?.classList.remove('d-none');
                 taskState.feedbackGenerated = true;
                 await logSeminarSession(participantId, sawTutorial, videoId);
                 logEvent('feedback_generated_successfully', {
