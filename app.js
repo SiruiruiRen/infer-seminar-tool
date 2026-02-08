@@ -54,6 +54,7 @@ const translations = {
         open_consent_form: 'Open Consent Form',
         data_consent_agree: 'I agree to the use of my anonymized data for scientific purposes.',
         data_consent_disagree: 'I do not agree to the use of my anonymized data for scientific purposes.',
+        consent_disagreement_message: 'You still need to complete this task and fill out all surveys to fulfill the course requirement. However, we will not store or share your data for scientific purposes.',
         continue_to_id: 'Continue',
         enter_id_title: 'Enter Your Participant Code',
         participant_code_label: 'Anonymous ID (Participant Code):',
@@ -82,7 +83,19 @@ const translations = {
         completion_code_title: 'Confirmation code',
         completion_code_instruction: 'After completing the survey, enter this code:',
         completion_code_note: 'Thank you for completing this video task! Please enter the following code to continue. The code is: 628034',
-        loading_messages: ['Analyzing your reflection...', 'Generating feedback...', 'Almost there...']
+        loading_messages: ['Analyzing your reflection...', 'Generating feedback...', 'Almost there...'],
+        settings: 'Settings',
+        words: 'words',
+        watch_tutorial: 'Watch Tutorial',
+        feedback_placeholder: 'Feedback will appear here after generation...',
+        learn_key_concepts: 'Learn the Key Concepts for Better Reflection',
+        concepts_help: 'Understanding these three dimensions will help you write more comprehensive teaching reflections',
+        description: 'Description',
+        explanation: 'Explanation',
+        prediction: 'Prediction',
+        description_def: 'Accurately observing and reporting what happened in the classroom - specific behaviors, interactions, and events without interpretation.',
+        explanation_def: 'Interpreting observed events using educational theory, research, and pedagogical knowledge - understanding why things happened.',
+        prediction_def: 'Anticipating future outcomes and effects on student learning based on observed teaching practices and their interpretations.'
     },
     de: {
         title: 'INFER',
@@ -99,6 +112,7 @@ const translations = {
         open_consent_form: 'Einverständnisformular öffnen',
         data_consent_agree: 'Ich stimme der Verwendung meiner anonymisierten Daten für wissenschaftliche Zwecke zu.',
         data_consent_disagree: 'Ich stimme der Verwendung meiner anonymisierten Daten für wissenschaftliche Zwecke nicht zu.',
+        consent_disagreement_message: 'Sie müssen diese Aufgabe trotzdem abschließen und alle Fragebögen ausfüllen, um die Kursanforderung zu erfüllen. Ihre Daten werden jedoch nicht für wissenschaftliche Zwecke gespeichert oder weitergegeben.',
         continue_to_id: 'Weiter',
         enter_id_title: 'Geben Sie Ihren Teilnehmer-Code ein',
         participant_code_label: 'Anonyme ID (Teilnehmer-Code):',
@@ -127,7 +141,19 @@ const translations = {
         completion_code_title: 'Bestätigungscode',
         completion_code_instruction: 'Nach Abschluss der Umfrage geben Sie diesen Code ein:',
         completion_code_note: 'Vielen Dank für die Bearbeitung dieser Videoaufgabe! Bitte geben Sie den folgenden Code ein, um fortzufahren. Der Code lautet: 628034',
-        loading_messages: ['Reflexion wird analysiert...', 'Feedback wird erstellt...', 'Fast fertig...']
+        loading_messages: ['Reflexion wird analysiert...', 'Feedback wird erstellt...', 'Fast fertig...'],
+        settings: 'Einstellungen',
+        words: 'Wörter',
+        watch_tutorial: 'Tutorial ansehen',
+        feedback_placeholder: 'Feedback erscheint hier nach der Generierung...',
+        learn_key_concepts: 'Schlüsselkonzepte für bessere Reflexion',
+        concepts_help: 'Diese drei Dimensionen helfen Ihnen, umfassendere Unterrichtsreflexionen zu schreiben.',
+        description: 'Beschreibung',
+        explanation: 'Erklärung',
+        prediction: 'Vorhersage',
+        description_def: 'Sachliches Beobachten und Berichten des Geschehenen im Unterricht – konkrete Verhaltensweisen, Interaktionen und Ereignisse ohne Bewertung.',
+        explanation_def: 'Beobachtetes mit Bildungstheorie, Forschung und pädagogischem Wissen deuten – verstehen, warum etwas passiert ist.',
+        prediction_def: 'Zukünftige Wirkungen auf das Lernen der Schüler:innen auf Basis der beobachteten Lehrpraxis und ihrer Deutung antizipieren.'
     }
 };
 
@@ -309,10 +335,14 @@ function setupDataCollectionPage() {
     const continueBtn = document.getElementById('continue-to-id');
     if (!continueBtn) return;
 
+    const disagreementMessage = document.getElementById('consent-disagreement-message');
     function updateContinueBtn() {
         const read = dataProtectionRead && dataProtectionRead.checked;
         const consent = (consentAgree && consentAgree.checked) || (consentDisagree && consentDisagree.checked);
         continueBtn.disabled = !(read && consent);
+        if (disagreementMessage) {
+            disagreementMessage.classList.toggle('d-none', !(consentDisagree && consentDisagree.checked));
+        }
     }
     if (dataProtectionRead) dataProtectionRead.addEventListener('change', updateContinueBtn);
     if (consentAgree) consentAgree.addEventListener('change', updateContinueBtn);
@@ -412,8 +442,12 @@ function setupTutorialPage() {
 }
 
 function showTaskPageWithVideo() {
-    const nameEl = document.getElementById('task-selected-video-name');
-    if (nameEl && selectedVideoName) nameEl.textContent = selectedVideoName;
+    const participantCodeEl = document.getElementById('task-participant-code');
+    const videoNameEl = document.getElementById('task-video-name');
+    const tutorialBtnWrapper = document.getElementById('task-tutorial-btn-wrapper');
+    if (participantCodeEl) participantCodeEl.value = participantId || '';
+    if (videoNameEl) videoNameEl.value = selectedVideoName || '';
+    if (tutorialBtnWrapper) tutorialBtnWrapper.classList.toggle('d-none', !sawTutorial);
     logEvent('task_page_shown', { video_id: selectedVideoId });
     showPage('page-task');
     setupTaskPage();
@@ -427,15 +461,30 @@ function setupTaskPage() {
     const loadingSpinner = document.getElementById('task-loading-spinner');
     const loadingText = document.getElementById('task-loading-text');
     const feedbackSection = document.getElementById('task-feedback-section');
+    const feedbackPlaceholder = document.getElementById('task-feedback-placeholder');
     const goToSurveyBtn = document.getElementById('task-go-to-survey');
 
     function updateWordCount() {
         const n = (textarea.value.trim().split(/\s+/).filter(w => w.length).length);
-        if (wordCountEl) wordCountEl.textContent = n + (currentLanguage === 'de' ? ' Wörter' : ' words');
+        if (wordCountEl && wordCountEl.firstChild) wordCountEl.firstChild.textContent = n + ' ';
         if (generateBtn) generateBtn.disabled = n < 50;
     }
     if (textarea) textarea.addEventListener('input', updateWordCount);
     updateWordCount();
+
+    const tutorialBtn = document.getElementById('task-tutorial-btn');
+    const tutorialModalEl = document.getElementById('tutorial-video-modal');
+    const tutorialModalVideo = document.getElementById('tutorial-modal-video');
+    if (tutorialBtn && tutorialModalEl && typeof bootstrap !== 'undefined') {
+        tutorialBtn.addEventListener('click', () => {
+            const modal = bootstrap.Modal.getOrCreateInstance(tutorialModalEl);
+            modal.show();
+            if (tutorialModalVideo) tutorialModalVideo.play().catch(() => {});
+        });
+    }
+    if (tutorialModalEl && tutorialModalVideo) {
+        tutorialModalEl.addEventListener('hidden.bs.modal', () => { tutorialModalVideo.pause(); });
+    }
 
     if (!generateBtn) return;
     generateBtn.addEventListener('click', async () => {
@@ -471,6 +520,7 @@ function setupTaskPage() {
                 document.getElementById('task-feedback-extended-content').innerHTML = '<div class="alert alert-warning">' + msg + '</div>';
                 document.getElementById('task-feedback-short-content').innerHTML = '<div class="alert alert-warning">' + msg + '</div>';
                 feedbackSection.classList.remove('d-none');
+                if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
             } else {
                 displayAnalysisDistribution(analysisResult);
                 const [extendedFeedback, shortFeedback] = await Promise.all([
@@ -487,6 +537,7 @@ function setupTaskPage() {
                 document.getElementById('task-feedback-extended-content').innerHTML = formatStructuredFeedback(extendedFeedback, analysisResult);
                 document.getElementById('task-feedback-short-content').innerHTML = formatStructuredFeedback(shortFeedback, analysisResult);
                 feedbackSection.classList.remove('d-none');
+                if (feedbackPlaceholder) feedbackPlaceholder.classList.add('d-none');
                 taskState.feedbackGenerated = true;
                 await logSeminarSession(participantId, sawTutorial, videoId);
                 logEvent('feedback_generated_successfully', {
@@ -518,6 +569,8 @@ function setupTaskPage() {
         logEvent('post_survey_link_clicked', { survey_verification_code: COMPLETION_CODE });
         showPage('page-postsurvey');
     });
+
+    setupDefinitionCardTracking();
 }
 
 function setupFeedbackTabTracking() {
@@ -538,15 +591,38 @@ function setupFeedbackTabTracking() {
 }
 
 function setupConceptClickTracking() {
-    const container = document.getElementById('task-feedback-section');
-    if (!container) return;
-    container.querySelectorAll('.feedback-heading').forEach((el, i) => {
-        const sectionClass = el.closest('.feedback-section')?.className || '';
+    const feedbackContainer = document.getElementById('task-feedback-section');
+    if (feedbackContainer) {
+        feedbackContainer.querySelectorAll('.feedback-heading').forEach((el) => {
+            const sectionClass = el.closest('.feedback-section')?.className || '';
+            let concept = 'other';
+            if (sectionClass.includes('description')) concept = 'description';
+            else if (sectionClass.includes('explanation')) concept = 'explanation';
+            else if (sectionClass.includes('prediction')) concept = 'prediction';
+            const conceptName = el.textContent.trim() || concept;
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => {
+                logEvent('concept_explanation_clicked', {
+                    video_id: selectedVideoId,
+                    concept_name: conceptName,
+                    concept_type: concept
+                });
+            });
+        });
+    }
+}
+
+function setupDefinitionCardTracking() {
+    const conceptsSection = document.getElementById('task-concepts-section');
+    if (!conceptsSection) return;
+    conceptsSection.querySelectorAll('.definition-card').forEach((el) => {
+        if (el.dataset.conceptBound) return;
+        el.dataset.conceptBound = '1';
         let concept = 'other';
-        if (sectionClass.includes('description')) concept = 'description';
-        else if (sectionClass.includes('explanation')) concept = 'explanation';
-        else if (sectionClass.includes('prediction')) concept = 'prediction';
-        const conceptName = el.textContent.trim() || concept;
+        if (el.classList.contains('description-card')) concept = 'description';
+        else if (el.classList.contains('explanation-card')) concept = 'explanation';
+        else if (el.classList.contains('prediction-card')) concept = 'prediction';
+        const conceptName = el.querySelector('h6')?.textContent?.trim() || concept;
         el.style.cursor = 'pointer';
         el.addEventListener('click', () => {
             logEvent('concept_explanation_clicked', {
