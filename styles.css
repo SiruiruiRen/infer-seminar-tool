@@ -1,0 +1,165 @@
+/* INFER Seminar Tool – same look as Till's experiment (alpha/beta) */
+
+:root {
+  --primary-color: #3f51b5;
+  --primary-dark: #002984;
+  --dark-gray: #4a4a4a;
+  --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f0 100%);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--dark-gray);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.main-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page-container {
+  padding-bottom: 2rem;
+}
+
+.header-full-width {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0 15px 15px;
+  box-shadow: var(--card-shadow);
+  width: 100%;
+}
+
+.header-full-width img {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+.header-full-width h1 {
+  font-weight: 600;
+  font-size: 1.75rem;
+  margin-bottom: 0.2rem;
+}
+
+.header-full-width p {
+  font-size: 0.95rem;
+  margin-bottom: 0;
+  opacity: 0.95;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  background: white;
+}
+
+.card-header {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* Analysis distribution (D/E/P summary) */
+.analysis-distribution-professional {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.professional-analysis-summary h6 {
+  color: var(--dark-gray);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.professional-analysis-summary .analysis-text {
+  font-size: 0.9rem;
+  color: var(--dark-gray);
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+/* Feedback sections (same as alpha) */
+.feedback-section {
+  padding: 0.25rem 0;
+  margin-bottom: 0.35rem;
+}
+
+.feedback-section:last-child {
+  margin-bottom: 0;
+}
+
+.feedback-section-description {
+  border-left: 4px solid #00ACC1;
+  padding-left: 1rem;
+}
+
+.feedback-section-explanation {
+  border-left: 4px solid #7B1FA2;
+  padding-left: 1rem;
+}
+
+.feedback-section-prediction {
+  border-left: 4px solid #388E3C;
+  padding-left: 1rem;
+}
+
+.feedback-section-overall {
+  border-left: 4px solid #3F51B5;
+  padding-left: 1rem;
+}
+
+.feedback-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-content .section-content {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.feedback-keyword {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+#task-feedback-extended-content,
+#task-feedback-short-content {
+  min-height: 120px;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.language-switcher-container {
+  display: flex;
+  justify-content: center;
+}
