@@ -37,6 +37,7 @@ let taskState = {
     currentFeedbackType: null
 };
 
+// Language translations (aligned with assignment and alpha)
 const translations = {
     en: {
         title: 'INFER',
@@ -56,7 +57,8 @@ const translations = {
         continue_to_id: 'Continue',
         enter_id_title: 'Enter Your Participant Code',
         participant_code_label: 'Anonymous ID (Participant Code):',
-        anonymous_id_help: 'Your ID is made of: 1) Last two letters of your mother\'s maiden name. 2) Number of letters in your mother\'s (first) first name. 3) Last two letters of your father\'s (first) first name. 4) Your birth day (day only). Example: Mother Elke-Hannelore Müller → ER; Mother first name Elke (4 letters) → 04; Father Wolf-Rüdiger → LF; Your birthday 09.11.1987 → 09. Result: ER04LF09',
+        code_placeholder: 'e.g., ER04LF09',
+        anonymous_id_help: '<strong>How to create your personal anonymous ID?</strong><br><br>To properly assign your data without violating confidentiality, we need an anonymous ID. The ID is constructed so that no one can trace your ID back to you, not even us. However, you can always reconstruct your ID if asked and you have forgotten it.<br><br>These are the components of your ID:<br>1. The last two letters of your mother\'s maiden name<br>2. The number of letters in your mother\'s (first) first name<br>3. The last two letters of your father\'s (first) first name<br>4. Your own birthday (only the day, not month and/or year)<br><br><em>Note:</em><br>- Please write all numbers with two digits, i.e. with a leading zero if necessary.<br>- For multiple or hyphenated first names, please only use the first one.<br>- If you don\'t know the respective name, write XX instead of letters or 00 for the number.<br><br><strong>Example (fictional):</strong><br>1. Mother\'s name: <strong>Elke</strong>-Hannelore Müller née Mayerhof<strong>er</strong> → <strong>ER</strong><br>2. Mother\'s first name: <strong>Elke</strong> (4 letters) → <strong>04</strong><br>3. Father\'s first name: Wo<strong>lf</strong>-Rüdiger → <strong>LF</strong><br>4. Your birthday: <strong>09</strong>.11.1987 → <strong>09</strong><br><br>This results in the ID: <strong>ER04LF09</strong>',
         continue_button: 'Continue',
         select_video_step: 'Select the video for your reflection',
         video_select_hint: 'You already have access to the videos in the seminar. Choose which video you are reflecting on.',
@@ -68,6 +70,7 @@ const translations = {
         video_label: 'Video',
         reflection_for: 'Reflection for:',
         reflection_input: 'Your reflection',
+        paste_reflection_placeholder: 'Paste or write your reflection here... (at least 400 words)',
         generate_feedback: 'Generate Feedback',
         generated_feedback: 'Generated Feedback',
         extended: 'Extended',
@@ -84,7 +87,7 @@ const translations = {
     de: {
         title: 'INFER',
         subtitle: 'Ein intelligentes Feedback-System zur Beobachtung von Unterricht',
-        browser_recommendation: 'Für die beste Erfahrung empfehlen wir <strong>Google Chrome</strong>.',
+        browser_recommendation: 'Für die beste Erfahrung empfehlen wir die Verwendung von <strong>Google Chrome</strong>.',
         welcome_seminar: 'Willkommen',
         welcome_message_seminar: 'Vielen Dank für Ihre Teilnahme. Bei dieser Aufgabe schauen Sie sich ein Unterrichtsvideo an (Zugang haben Sie im Seminar), schreiben eine Reflexion und erhalten KI-Feedback.',
         data_protection_header: 'Datenschutzhinweise',
@@ -99,7 +102,8 @@ const translations = {
         continue_to_id: 'Weiter',
         enter_id_title: 'Geben Sie Ihren Teilnehmer-Code ein',
         participant_code_label: 'Anonyme ID (Teilnehmer-Code):',
-        anonymous_id_help: 'Dies sind die Bestandteile Ihrer ID: 1. Die beiden letzten Buchstaben des Geburtsnamens Ihrer Mutter. 2. Die Anzahl der Buchstaben des (ersten) Vornamens Ihrer Mutter. 3. Die beiden letzten Buchstaben des (ersten) Vornamens Ihres Vaters. 4. Ihr eigener Geburtstag (nur der Tag). Beispiel: Mutter Elke-Hannelore Müller geb. Mayerhofer → ER; Vorname Mutter Elke (4 Buchstaben) → 04; Vorname Vater Wolf-Rüdiger → LF; Ihr Geburtstag 09.11.1987 → 09. Daraus ergibt sich: ER04LF09',
+        code_placeholder: 'z.B. ER04LF09',
+        anonymous_id_help: '<strong>Wie erstellen Sie Ihre persönliche anonyme ID?</strong><br><br>Um Ihre Daten richtig zuordnen zu können, ohne die Geheimhaltung zu verletzen, benötigen wir eine anonyme ID. Die ID ist so aufgebaut, dass niemand von Ihrer ID auf Ihre Person rückschließen kann, auch wir nicht. Sie selbst können Ihre ID aber jederzeit rekonstruieren, wenn Sie danach gefragt werden und sie vergessen haben sollten.<br><br>Dies sind die Bestandteile Ihrer ID:<br>1. Die beiden letzten Buchstaben des Geburtsnamens Ihrer Mutter<br>2. Die Anzahl der Buchstaben des (ersten) Vornamens Ihrer Mutter<br>3. Die beiden letzten Buchstaben des (ersten) Vornamens Ihres Vaters<br>4. Ihr eigener Geburtstag (nur der Tag, nicht Monat und/oder Jahr)<br><br><em>Hinweis:</em><br>- Bitte schreiben Sie alle Zahlen zweistellig, d.h. wenn nötig mit führender Null.<br>- Bei mehreren oder zusammengesetzten Vornamen berücksichtigen Sie bitte nur den ersten.<br>- Wenn Sie den jeweiligen Namen nicht kennen, schreiben Sie statt der Buchstaben XX bzw. für die Zahl 00.<br><br><strong>Beispiel (fiktiv):</strong><br>1. Name der Mutter: <strong>Elke</strong>-Hannelore Müller geb. Mayerhof<strong>er</strong> → <strong>ER</strong><br>2. Vorname der Mutter: <strong>Elke</strong> (4 Buchstaben) → <strong>04</strong><br>3. Vorname des Vaters: Wo<strong>lf</strong>-Rüdiger → <strong>LF</strong><br>4. Ihr Geburtstag: <strong>09</strong>.11.1987 → <strong>09</strong><br><br>Daraus ergibt sich als ID: <strong>ER04LF09</strong>',
         continue_button: 'Weiter',
         select_video_step: 'Wählen Sie das Video für Ihre Reflexion',
         video_select_hint: 'Die Videos haben Sie bereits im Seminar. Wählen Sie, zu welchem Video Sie reflektieren.',
@@ -111,9 +115,10 @@ const translations = {
         video_label: 'Video',
         reflection_for: 'Reflexion zu:',
         reflection_input: 'Ihre Reflexion',
+        paste_reflection_placeholder: 'Fügen Sie hier Ihre Reflexion ein oder schreiben Sie sie... (mindestens 400 Wörter)',
         generate_feedback: 'Feedback generieren',
         generated_feedback: 'Generiertes Feedback',
-        extended: 'Ausführlich',
+        extended: 'Erweitert',
         short: 'Kurz',
         go_to_post_survey: 'Weiter zur Nachbefragung',
         post_survey_title: 'Nachbefragung',
@@ -144,11 +149,34 @@ function showAlert(message, type) {
 
 function applyTranslations() {
     const t = translations[currentLanguage] || translations.en;
+    if (!t) return;
+    document.querySelectorAll('[data-lang-key-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-lang-key-placeholder');
+        if (t[key]) el.placeholder = t[key];
+    });
     document.querySelectorAll('[data-lang-key]').forEach(el => {
         const key = el.getAttribute('data-lang-key');
-        if (t[key]) {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t[key];
-            else if (el.querySelector('span')) el.querySelector('span').textContent = t[key];
+        if (!t[key]) return;
+        if (el.tagName === 'BUTTON' && el.querySelector('span[data-lang-key]')) {
+            const span = el.querySelector('span[data-lang-key]');
+            if (span) {
+                if (t[key].includes('<') && t[key].includes('>')) span.innerHTML = t[key];
+                else span.textContent = t[key];
+            }
+        } else if (el.tagName === 'A' && el.querySelector('span[data-lang-key]')) {
+            const span = el.querySelector('span[data-lang-key]');
+            if (span) {
+                if (t[key].includes('<') && t[key].includes('>')) span.innerHTML = t[key];
+                else span.textContent = t[key];
+            }
+        } else if (el.tagName === 'SPAN' || el.tagName === 'SMALL') {
+            if (t[key].includes('<') && t[key].includes('>')) el.innerHTML = t[key];
+            else el.textContent = t[key];
+        } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            if (key.includes('placeholder') || key.includes('reflection') || key.includes('paste')) el.placeholder = t[key];
+            else el.value = t[key];
+        } else {
+            if (t[key].includes('<') && t[key].includes('>')) el.innerHTML = t[key];
             else el.textContent = t[key];
         }
     });
