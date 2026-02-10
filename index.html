@@ -128,19 +128,27 @@
                             <h4 data-lang-key="enter_id_title">Enter Your Participant Code</h4>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <label for="seminar-descriptor-input" class="form-label" data-lang-key="seminar_descriptor_label">Seminar title, semester, and year:</label>
-                                <input type="text" class="form-control" id="seminar-descriptor-input" data-lang-key-placeholder="seminar_descriptor_placeholder" placeholder="e.g., Mathematics Teaching Seminar, WS 2025/26" maxlength="100">
-                            </div>
-                            <div class="mb-3">
-                                <label for="anonymous-id-input" class="form-label" data-lang-key="participant_code_label">Anonymous ID (Participant Code):</label>
-                                <input type="text" class="form-control" id="anonymous-id-input" data-lang-key-placeholder="code_placeholder" placeholder="e.g., ER04LF09" maxlength="20" required>
-                                <small class="form-text text-muted" data-lang-key="anonymous_id_help"></small>
-                            </div>
-                            <button type="button" id="submit-id" class="btn btn-primary btn-lg w-100">
-                                <i class="bi bi-arrow-right me-2"></i>
-                                <span data-lang-key="continue_button">Continue</span>
-                            </button>
+                                <div class="mb-3">
+                                    <label for="seminar-title-input" class="form-label" data-lang-key="seminar_title_label">Title of the seminar:</label>
+                                    <input type="text" class="form-control" id="seminar-title-input" data-lang-key-placeholder="seminar_title_placeholder" placeholder="e.g., Mathematics Teaching Seminar" maxlength="150">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="seminar-semester-input" class="form-label" data-lang-key="seminar_semester_label">Semester:</label>
+                                    <input type="text" class="form-control" id="seminar-semester-input" data-lang-key-placeholder="seminar_semester_placeholder" placeholder="e.g., WS 2025/26" maxlength="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="seminar-year-input" class="form-label" data-lang-key="seminar_year_label">Year:</label>
+                                    <input type="text" class="form-control" id="seminar-year-input" data-lang-key-placeholder="seminar_year_placeholder" placeholder="e.g., 2025/2026" maxlength="20">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="anonymous-id-input" class="form-label" data-lang-key="participant_code_label">Anonymous ID (Participant Code):</label>
+                                    <input type="text" class="form-control" id="anonymous-id-input" data-lang-key-placeholder="code_placeholder" placeholder="e.g., ER04LF09" maxlength="20" required>
+                                    <small class="form-text text-muted" data-lang-key="anonymous_id_help"></small>
+                                </div>
+                                <button type="button" id="submit-id" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-arrow-right me-2"></i>
+                                    <span data-lang-key="continue_button">Continue</span>
+                                </button>
                         </div>
                     </div>
                 </div>
