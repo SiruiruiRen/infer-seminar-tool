@@ -29,6 +29,7 @@ let sessionId = null;
 let participantId = null;
 let selectedVideoId = null;
 let selectedVideoName = null;
+let seminarDescriptor = null;
 let sawTutorial = false;
 let taskState = {
     feedbackGenerated: false,
@@ -59,6 +60,8 @@ const translations = {
         enter_id_title: 'Enter Your Participant Code',
         participant_code_label: 'Anonymous ID (Participant Code):',
         code_placeholder: 'e.g., ER04LF09',
+        seminar_descriptor_label: 'Seminar title, semester, and year:',
+        seminar_descriptor_placeholder: 'e.g., Mathematics Teaching Seminar, WS 2025/26',
         anonymous_id_help: '<strong>How to create your personal anonymous ID?</strong><br><br>To properly assign your data without violating confidentiality, we need an anonymous ID. The ID is constructed so that no one can trace your ID back to you, not even us. However, you can always reconstruct your ID if asked and you have forgotten it.<br><br>These are the components of your ID:<br>1. The last two letters of your mother\'s maiden name<br>2. The number of letters in your mother\'s (first) first name<br>3. The last two letters of your father\'s (first) first name<br>4. Your own birthday (only the day, not month and/or year)<br><br><em>Note:</em><br>- Please write all numbers with two digits, i.e. with a leading zero if necessary.<br>- For multiple or hyphenated first names, please only use the first one.<br>- If you don\'t know the respective name, write XX instead of letters or 00 for the number.<br><br><strong>Example (fictional):</strong><br>1. Mother\'s name: <strong>Elke</strong>-Hannelore Müller née Mayerhof<strong>er</strong> → <strong>ER</strong><br>2. Mother\'s first name: <strong>Elke</strong> (4 letters) → <strong>04</strong><br>3. Father\'s first name: Wo<strong>lf</strong>-Rüdiger → <strong>LF</strong><br>4. Your birthday: <strong>09</strong>.11.1987 → <strong>09</strong><br><br>This results in the ID: <strong>ER04LF09</strong>',
         continue_button: 'Continue',
         select_video_step: 'Select the video for your reflection',
@@ -122,7 +125,7 @@ const translations = {
         subtitle: 'Ein intelligentes Feedback-System zur Beobachtung von Unterricht',
         browser_recommendation: 'Für die beste Erfahrung empfehlen wir die Verwendung von <strong>Google Chrome</strong>.',
         welcome_seminar: 'Willkommen',
-        welcome_message_seminar: 'Vielen Dank für Ihre Teilnahme. Bei dieser Aufgabe schauen Sie sich ein Unterrichtsvideo an (Zugang haben Sie im Seminar), schreiben eine Reflexion und erhalten KI-Feedback.',
+        welcome_message_seminar: 'Vielen Dank für Ihre Teilnahme. Bei dieser Aufgabe schauen Sie sich ein Unterrichtsvideo an (Zugang erhalten Sie im Seminar), schreiben eine Reflexion und erhalten KI-Feedback.',
         data_protection_header: 'Datenschutzhinweise',
         data_protection_intro: 'Bitte lesen Sie das unten stehende Datenschutzdokument.',
         open_data_protection_doc: 'Datenschutzdokument öffnen',
@@ -137,9 +140,11 @@ const translations = {
         enter_id_title: 'Geben Sie Ihren Teilnehmer-Code ein',
         participant_code_label: 'Anonyme ID (Teilnehmer-Code):',
         code_placeholder: 'z.B. ER04LF09',
+        seminar_descriptor_label: 'Titel des Seminars, Semester und Jahr:',
+        seminar_descriptor_placeholder: 'z.B. Seminar Mathematikunterricht, WS 2025/26',
         anonymous_id_help: '<strong>Wie erstellen Sie Ihre persönliche anonyme ID?</strong><br><br>Um Ihre Daten richtig zuordnen zu können, ohne die Geheimhaltung zu verletzen, benötigen wir eine anonyme ID. Die ID ist so aufgebaut, dass niemand von Ihrer ID auf Ihre Person rückschließen kann, auch wir nicht. Sie selbst können Ihre ID aber jederzeit rekonstruieren, wenn Sie danach gefragt werden und sie vergessen haben sollten.<br><br>Dies sind die Bestandteile Ihrer ID:<br>1. Die beiden letzten Buchstaben des Geburtsnamens Ihrer Mutter<br>2. Die Anzahl der Buchstaben des (ersten) Vornamens Ihrer Mutter<br>3. Die beiden letzten Buchstaben des (ersten) Vornamens Ihres Vaters<br>4. Ihr eigener Geburtstag (nur der Tag, nicht Monat und/oder Jahr)<br><br><em>Hinweis:</em><br>- Bitte schreiben Sie alle Zahlen zweistellig, d.h. wenn nötig mit führender Null.<br>- Bei mehreren oder zusammengesetzten Vornamen berücksichtigen Sie bitte nur den ersten.<br>- Wenn Sie den jeweiligen Namen nicht kennen, schreiben Sie statt der Buchstaben XX bzw. für die Zahl 00.<br><br><strong>Beispiel (fiktiv):</strong><br>1. Name der Mutter: <strong>Elke</strong>-Hannelore Müller geb. Mayerhof<strong>er</strong> → <strong>ER</strong><br>2. Vorname der Mutter: <strong>Elke</strong> (4 Buchstaben) → <strong>04</strong><br>3. Vorname des Vaters: Wo<strong>lf</strong>-Rüdiger → <strong>LF</strong><br>4. Ihr Geburtstag: <strong>09</strong>.11.1987 → <strong>09</strong><br><br>Daraus ergibt sich als ID: <strong>ER04LF09</strong>',
         continue_button: 'Weiter',
-        select_video_step: 'Wählen Sie das Video für Ihre Reflexion',
+        select_video_step: 'Bitte wählen Sie das Video aus, zu welchem Sie eine Unterrichtsreflexion anfertigen werden.',
         video_select_hint: 'Die Videos haben Sie bereits im Seminar. Wählen Sie, zu welchem Video Sie reflektieren.',
         select_video: 'Wählen Sie ein Video:',
         tutorial_video_title: 'Tutorial: So nutzen Sie INFER',
@@ -170,7 +175,7 @@ const translations = {
         words: 'Wörter',
         watch_tutorial: 'Tutorial ansehen',
         feedback_placeholder: 'Feedback erscheint hier nach der Generierung...',
-        learn_key_concepts: 'Schlüsselkonzepte für bessere Reflexion',
+        learn_key_concepts: 'Schlüsselkonzepte für eine bessere Reflexion.',
         concepts_help: 'Diese drei Dimensionen helfen Ihnen, umfassendere Unterrichtsreflexionen zu schreiben.',
         description: 'Beschreibung',
         explanation: 'Erklärung',
@@ -273,6 +278,7 @@ async function logSeminarSession(participant_name, saw_tutorial, video_id, surve
     try {
         const row = {
             participant_name: participant_name.trim().toUpperCase(),
+            seminar_descriptor: seminarDescriptor || null,
             saw_tutorial: !!saw_tutorial,
             video_id: video_id || null,
             updated_at: new Date().toISOString()
@@ -402,6 +408,7 @@ function setupDataCollectionPage() {
 function setupIdPage() {
     const input = document.getElementById('anonymous-id-input');
     const btn = document.getElementById('submit-id');
+    const seminarInput = document.getElementById('seminar-descriptor-input');
     if (!input || !btn) return;
 
     function updateBtn() {
@@ -413,8 +420,12 @@ function setupIdPage() {
         const id = input.value.trim().toUpperCase();
         if (!id) return;
         participantId = id;
+        seminarDescriptor = seminarInput && seminarInput.value ? seminarInput.value.trim() : null;
         sessionId = null;
-        logEvent('id_entered', { participant_name: participantId });
+        logEvent('id_entered', {
+            participant_name: participantId,
+            seminar_descriptor: seminarDescriptor || null
+        });
         showPage('page-video-select');
     });
 }
